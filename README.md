@@ -57,7 +57,7 @@ struct IntsBuilder: ElementsBuilder {
 Add this repository as a Swift Package Manager dependency:
 
 ```swift
-.package(url: "https://github.com/noeticgarden/pico-elementsbuilder.git", from: "1.0")
+.package(url: "https://github.com/noeticgarden/pico-elementsbuilder.git", from: "1.0.0"),
 ```
 
 Then, use the `ElementsBuilder` module:
