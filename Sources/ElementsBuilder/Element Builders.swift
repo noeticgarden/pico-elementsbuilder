@@ -41,30 +41,59 @@
 public protocol ElementsBuilder {
     /// The element that is gathered. The closures that use this result builder will return `[Element]` by default.
     associatedtype Element
+    associatedtype Component = [Element]
+    
+    static func makeComponent() -> Component
+    static func makeComponent(flatMap components: [Component]) -> Component
+    static func makeComponent(_ elements: some Sequence<Element>) -> Component
 }
 
+extension ElementsBuilder where Component: Sequence, Component.Element == Element {
+    public static func makeComponent(flatMap components: [Component]) -> Component {
+        let mapped = components.flatMap { $0 }
+        return makeComponent(mapped)
+    }
+}
+
+extension ElementsBuilder where Component: SequenceConvertible, Component.Element == Element {
+    public static func makeComponent() -> Component {
+        Component(EmptyCollection())
+    }
+    
+    public static func makeComponent(_ elements: some Sequence<Element>) -> Component {
+        Component(elements)
+    }
+}
+
+public protocol SequenceConvertible: Sequence {
+    init(_ elements: some Sequence<Element>)
+}
+
+extension Set: SequenceConvertible {}
+extension Array: SequenceConvertible {}
+
 extension ElementsBuilder {
-    public static func buildExpression(_ expression: Element) -> [Element] {
-        [expression]
+    public static func buildExpression(_ expression: Element) -> Component {
+        makeComponent(CollectionOfOne(expression))
     }
     
-    public static func buildBlock(_ components: [Element]...) -> [Element] {
-        components.flatMap { $0 }
+    public static func buildBlock(_ components: Component...) -> Component {
+        makeComponent(flatMap: components)
     }
     
-    public static func buildArray(_ components: [[Element]]) -> [Element] {
-        components.flatMap { $0 }
+    public static func buildArray(_ components: [Component]) -> Component {
+        makeComponent(flatMap: components)
     }
     
-    public static func buildOptional(_ component: [Element]?) -> [Element] {
-        component ?? []
+    public static func buildOptional(_ component: Component?) -> Component {
+        component ?? makeComponent()
     }
     
-    public static func buildEither(first component: [Element]) -> [Element] {
+    public static func buildEither(first component: Component) -> Component {
         component
     }
     
-    public static func buildEither(second component: [Element]) -> [Element] {
+    public static func buildEither(second component: Component) -> Component {
         component
     }
 }
