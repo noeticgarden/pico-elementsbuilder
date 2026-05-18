@@ -7,10 +7,12 @@ let package = Package(
     products: [
         .library(
             name: "ElementsBuilder",
-            targets: ["ElementsBuilder"]),
+            targets: ["ElementsBuilder"]
+        ),
     ],
     targets: [
         .target(
-            name: "ElementsBuilder"),
+            name: "ElementsBuilder"
+        ),
     ]
 )
